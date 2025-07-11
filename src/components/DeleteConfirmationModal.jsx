@@ -1,16 +1,16 @@
 import PropTypes from 'prop-types';
 
 export const DeleteConfirmationModal = ({ show, onClose, onConfirm, message }) => {
-   
+
     if (!show) {
         return null;
     }
 
     return (
-       
+
         <div className="modal d-block" tabIndex="-1" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
             <div className="modal-dialog modal-dialog-centered"
-            style={{ marginTop: '-80px' }}
+                style={{ marginTop: '-80px' }}
             >
                 <div className="modal-content rounded-xl shadow-lg"> {/* Esquinas redondeadas y sombra */}
                     <div className="modal-header">

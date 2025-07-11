@@ -1,7 +1,7 @@
-import { Link, useParams, useNavigate } from "react-router-dom";
 import React, { useState, useEffect } from "react";
-import useGlobalReducer from "../hooks/useGlobalReducer";
-import { addContact, updateContact } from "../components/contactService.js";
+import { Link, useParams, useNavigate } from "react-router-dom";
+import useGlobalReducer from "../hooks/useGlobalReducer.jsx"; // Importa el custom hook del estado global
+import { addContact, updateContact } from "../components/contactService.js"; // Asegúrate de tener estas funciones
 
 export const Editcontact = () => {
     const { id } = useParams(); // Obtiene el ID del parámetro de la URL si estamos editando
@@ -14,6 +14,7 @@ export const Editcontact = () => {
         email: "",
         phone: "",
         address: "",
+        agenda_slug: "my_agenda" // ¡Importante! Asegúrate de que este slug coincida con el que usas en tu backend
     };
 
     const [formData, setFormData] = useState(emptyFormData); // Estado para los datos del formulario
@@ -36,15 +37,19 @@ export const Editcontact = () => {
                     email: contactToEdit.email,
                     phone: contactToEdit.phone,
                     address: contactToEdit.address,
+                    agenda_slug: contactToEdit.agenda_slug || "my_agenda", // Asegura que el slug se mantenga si ya existe
                 });
             } else {
                 console.warn(`Contacto con ID ${id} no encontrado en el store. Redirigiendo a home.`);
-                navigate("/"); // Si el contacto no se encuentra, redirige a la página principal
+                // Si el contacto no se encuentra en el store (ej. se recargó la página directamente en /editcontact/:id),
+                // podrías considerar hacer una llamada a la API aquí para obtenerlo si es necesario,
+                // o simplemente redirigir si no es crítico.
+                navigate("/"); 
             }
         } else {
             setFormData(emptyFormData); // Si no estamos editando, reinicia el formulario
         }
-    }, [id, isEditing, store.contacts, navigate]); // Dependencias del efecto
+    }, [id, isEditing, store.contacts, navigate, dispatch]); // Añadido 'dispatch' a las dependencias por buena práctica, aunque no cambia aquí.
 
     /**
      * Maneja los cambios en los campos del formulario.

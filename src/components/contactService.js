@@ -1,4 +1,4 @@
-const AGENDA_SLUG = "Thaner1106"; 
+const AGENDA_SLUG = "Thaner1106"; // ¡Asegúrate de que este sea el slug correcto de tu agenda!
 
 const API_BASE_URL = `https://playground.4geeks.com/contact/agendas/${AGENDA_SLUG}`;
 
@@ -44,12 +44,10 @@ const _fetchApi = async (endpoint, options = {}) => {
  */
 export const createAgenda = async () => {
     try {
-       
         const result = await _fetchApi("", { method: "POST" });
         console.log(`Agenda '${AGENDA_SLUG}' creada o ya existente:`, result);
         return result;
     } catch (error) {
-        
         if (error.message.includes("agenda already exists")) {
             console.warn(`Agenda '${AGENDA_SLUG}' ya existe. Continuando.`);
             return { message: "Agenda ya existe." };
@@ -64,7 +62,6 @@ export const createAgenda = async () => {
  * @returns {Promise<object>} Una promesa que resuelve con los detalles de la agenda.
  */
 export const getAgenda = async () => {
-    // El endpoint para obtener los detalles de la agenda es la URL base sin ningún path adicional.
     const data = await _fetchApi("", { method: "GET" });
     return data;
 };
@@ -75,19 +72,23 @@ export const getAgenda = async () => {
  * @returns {Promise<Array>} Una promesa que resuelve con un array de objetos de contacto.
  */
 export const getContacts = async () => {
-    // El endpoint para obtener todos los contactos es "/contacts"
-    const data = await _fetchApi("/contacts", { method: "GET" }); // Se añadió explícitamente method: "GET"
+    const data = await _fetchApi("/contacts", { method: "GET" });
+    // ¡CORRECCIÓN CLAVE AQUÍ!
     // La API de 4Geeks a veces devuelve directamente el array, a veces un objeto con una propiedad 'contacts'
-    return data.contacts || data; 
+    const contactsArray = data.contacts || data;
+    // Mapea los contactos para cambiar 'name' a 'full_name' antes de devolverlos
+    return contactsArray.map(contact => ({
+        ...contact,
+        full_name: contact.name // Transforma 'name' a 'full_name'
+    }));
 };
 
 /**
  * Añade un nuevo contacto a la agenda.
  * @param {object} contactData Los datos del nuevo contacto (full_name, email, phone, address).
- * @returns {Promise<object>} Una promesa que resuelve con el objeto del contacto recién creado.
+ * @returns {Promise<object>} Una promesa que resuelve con el objeto del contacto recién creado, con 'full_name'.
  */
 export const addContact = async (contactData) => {
-    
     // La API de 4Geeks espera 'name' para el nombre del contacto.
     const payload = { 
         name: contactData.full_name, // Mapeamos full_name del formulario a 'name' para la API
@@ -96,23 +97,23 @@ export const addContact = async (contactData) => {
         address: contactData.address,
         agenda_slug: AGENDA_SLUG 
     };
-    console.log("Payload enviado para addContact:", payload); // Log del payload
+    console.log("Payload enviado para addContact:", payload);
     const result = await _fetchApi("/contacts", {
         method: "POST",
         body: JSON.stringify(payload),
     });
-    return result;
+    // ¡CORRECCIÓN CLAVE AQUÍ!
+    // Transforma el resultado de la API para que tenga 'full_name' antes de devolverlo
+    return { ...result, full_name: result.name };
 };
 
 /**
  * Actualiza un contacto existente en la agenda.
  * @param {number|string} contactId El ID del contacto a actualizar.
  * @param {object} updatedContactData Los nuevos datos del contacto (full_name, email, phone, address).
- * @returns {Promise<object>} Una promesa que resuelve con el objeto del contacto actualizado.
+ * @returns {Promise<object>} Una promesa que resuelve con el objeto del contacto actualizado, con 'full_name'.
  */
 export const updateContact = async (contactId, updatedContactData) => {
-    // ¡CORRECCIÓN CLAVE AQUÍ! Cambiado de updatedContactData.full_name a updatedContactData.name
-    // La API de 4Geeks espera 'name' para el nombre del contacto.
     const payload = { 
         name: updatedContactData.full_name, // Mapeamos full_name del formulario a 'name' para la API
         email: updatedContactData.email,
@@ -120,12 +121,14 @@ export const updateContact = async (contactId, updatedContactData) => {
         address: updatedContactData.address,
         agenda_slug: AGENDA_SLUG 
     };
-    console.log("Payload enviado para updateContact:", payload); // Log del payload
+    console.log("Payload enviado para updateContact:", payload);
     const result = await _fetchApi(`/contacts/${contactId}`, {
         method: "PUT",
         body: JSON.stringify(payload),
     });
-    return result;
+    // ¡CORRECCIÓN CLAVE AQUÍ!
+    // Transforma el resultado de la API para que tenga 'full_name' antes de devolverlo
+    return { ...result, full_name: result.name };
 };
 
 /**
