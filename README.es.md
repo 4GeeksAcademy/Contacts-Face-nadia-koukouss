@@ -20,7 +20,7 @@ Puedes actualizar el archivo `./index.css` o crear nuevos archivos `.css` e impo
 
 ### Componentes
 
-Agrega más archivos en tu carpeta `./src/components` según los necesites e impórtalos en tus paginas actuales según sea necesario.
+Agrega más archivos en tu carpeta `./src/components` según los necesites e impórtalos en tus páginas actuales según sea necesario.
 
 ### Páginas
 
